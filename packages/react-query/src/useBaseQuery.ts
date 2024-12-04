@@ -103,6 +103,7 @@ export function useBaseQuery<
     () => observer.getCurrentResult(),
   )
 
+
   React.useEffect(() => {
     // Do not notify on updates because of changes in the options because
     // these changes should already be reflected in the optimistic result.
@@ -111,7 +112,10 @@ export function useBaseQuery<
 
   // Handle suspense
   if (shouldSuspend(defaultedOptions, result)) {
-    throw fetchOptimistic(defaultedOptions, observer, errorResetBoundary)
+    throw result.promise.then(() => result)
+     .catch(() => {
+       errorResetBoundary.clearReset()
+     })
   }
 
   // Handle error boundary
